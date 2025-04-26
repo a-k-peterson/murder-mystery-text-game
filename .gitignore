@@ -1,0 +1,8 @@
+# ignore everything in the text_files folder
+text_files/
+
+# ignore the vs code folder
+.vscode/
+
+# ignore the executable
+/main.exe
