@@ -7,9 +7,14 @@ using namespace std;
 
 class Game {
   public:
-    int days;
-    vector<string> locations;
-    vector<string> townsfolk;
+    const int days = 3;   // total number of days in the game
+    const int hours = 8;  // number of hours per day
+    int day;          // current day
+    int hour;         // current hour
+    vector<string> locations; // known locations - will grow as the game is played
+    vector<string> townsfolk; // known townsfolk - will grow as the game is played
+    string accused;   // who the player accuses of murder
+    string murderer;  // murderer identity kept in text files to avoid spoilers
 
     Game ();
 
@@ -18,6 +23,7 @@ class Game {
     void addTownsfolk(string fileName);
     string selectATownsfolk();
     string selectALocation();
+    string getMurderer();
 
 };
 

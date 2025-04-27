@@ -11,15 +11,11 @@ class Player {
     string name;
     string currentLocation;
     vector<string> inventory;
-    int energy;
-    int fullEnergy;
 
     Player () {
       //cout << "What is your player's name?\n";
       //cin >> name;
       //currentLocation = "Home";
-      energy = 10;
-      fullEnergy = 10;
     }
 };
 
@@ -38,16 +34,16 @@ int main() {
   cout << "You are expected to solve any murders that occur within 3 days. You have time for 10 actions each day.\n";
   cout << "Let's begin!\n\n";
 
-  string accused = "";
-  for (int day=1; day<=game.days; day++) {
+  // loop for each day
+  while (game.day <= game.days) {
     // cutscene for beginning of each day
-    cout << "Morning of day " + to_string(day) + ":\n";
-    game.playCutscene("morning_" + to_string(day));
+    cout << "Morning of day " + to_string(game.day) + ":\n";
+    game.playCutscene("morning_" + to_string(game.day));
 
-    // 10 turns each day to spend as the player wishes
-    while (player.energy > 0 && accused == "") {
-      cout << "\n\nIt is day " + to_string(day) + " of " + to_string(game.days);
-      cout << " and you have " + to_string(player.energy) + "/" + to_string(player.fullEnergy) + " actions left today.\n";
+    // loop for each hour in day
+    while (game.hour <= game.hours && game.accused == "") {
+      cout << "\n\nDay: " + to_string(game.day) + "/" + to_string(game.days);
+      cout << "\tHour: " + to_string(game.hour) + "/" + to_string(game.hours) + "\n";
       cout << "What would you like to do?\n";
       cout << "1 - Interview someone\n";
       cout << "2 - Inspect a location\n";
@@ -65,12 +61,12 @@ int main() {
               break;
             }
             // interview the person selected
-            string scene = "day_" + to_string(day) + "_" + selected;
+            string scene = "day_" + to_string(game.day) + "_" + selected;
             if (!game.playCutscene(scene)) {
               // they had nothing to say
               cout << selected + " had nothing new to say...\n";
             }
-            player.energy--;
+            game.hour++;
             break;
           }
 
@@ -82,12 +78,12 @@ int main() {
               break;
             }
             // inspect the location selected
-            string scene = "day_" + to_string(day) + "_" + selected;
+            string scene = "day_" + to_string(game.day) + "_" + selected;
             if (!game.playCutscene(scene)) {
               // there is nothing new to see
               cout << selected + " looks the same...\n";
             }
-            player.energy--;
+            game.hour++;
             break;
           }
 
@@ -99,7 +95,7 @@ int main() {
               break;
             }
             // run a background check on the person selected
-            player.energy--;
+            game.hour++;
             break;
           }
 
@@ -110,7 +106,7 @@ int main() {
             if (selected == "Nevermind") {
               break;
             }
-            accused = selected;
+            game.accused = selected;
             break;
           }
         case 5:
@@ -121,22 +117,29 @@ int main() {
       }
     }
     // break if you are ready to accuse someone
-    if (accused != "") {
+    if (game.accused != "") {
       break;
     }
-    // out of energy for the day
+    // out of time for today
     cout << "Time to call it a day...\n";
-    player.energy = player.fullEnergy;
-    
+    game.hour = 1;
+    game.day++;
   }
 
-  if (accused == "") {
-    // you have run out of time to solve the mystery
-    cout << "Out of time :(\n";
+  // Ending 1 - player ran out of time
+  if (game.accused == "") {
+    game.playCutscene("end_out_of_time");
     return 0;
   }
-  // so you think you've solved it
-  cout << "So you think you've solved it...";
 
+  // Ending 2 - player correctly solved the case!
+  if (game.accused == game.murderer) {
+    game.playCutscene("end_murderer_accused");
+    return 0;
+  }
+
+  // Ending 3 - player accused an innocent townsfolk
+  game.playCutscene("end_innocent_accused");
   return 0;
+
 }

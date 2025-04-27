@@ -8,9 +8,14 @@ using namespace std;
 
 
 Game::Game () {
-    this->days = 3;
-    this->locations = {};
-    this->townsfolk = {};
+    //const int days = 3;   // total number of days in the game
+    //const int hours = 8;  // number of hours per day
+    this->day = 1;      // current day
+    this->hour = 1;     // current hour
+    this->locations = {};   // known locations - will grow as the game is played
+    this->townsfolk = {};   // known townsfolk - will grow as the game is played
+    this->accused = "";             // who the player accuses of murder
+    this->murderer = getMurderer(); // murderer identity kept in text files to avoid spoilers
 }
 
 bool Game::playCutscene(string fileName) {
@@ -80,4 +85,12 @@ string Game::selectALocation() {
         return "Nevermind";
     }
     return locations.at(selectNum-1);
+}
+
+string Game::getMurderer() {
+    string myText;
+    fstream myFile("text_files/murderer.txt");
+    getline (myFile, myText);
+    myFile.close();
+    return myText;
 }
