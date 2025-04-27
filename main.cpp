@@ -110,7 +110,20 @@ int main() {
             break;
           }
         case 5:
-          return 0;
+          {
+            cout << "Are you sure you want to quit the game? (y/n)\n";
+            string sure;
+            cin >> sure;
+            while (sure != "y" && sure != "n") {
+              cout << "Invalid entry. Please enter y to quit or n to continue.\n";
+              cin >> sure;
+            }
+            if (sure == "y") {
+              cout << "Goodbye";
+              return 0;
+            }
+            break;
+          }
 
         default:
           cout << "Invalid entry. Please enter a number between 1 and 5.\n";
