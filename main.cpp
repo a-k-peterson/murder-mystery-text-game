@@ -1,3 +1,5 @@
+#include "game.h"
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -19,87 +21,6 @@ class Player {
       energy = 10;
       fullEnergy = 10;
     }
-};
-
-class Game {
-  public:
-    int days;
-    vector<string> locations;
-    vector<string> townsfolk;
-
-    Game () {
-      days = 3;
-    }
-
-    bool playCutscene(string fileName) {
-      string myText;
-      fstream myFile("text_files/" + fileName + ".txt");
-      if (!myFile.good()) {
-        return false;
-      }
-      while (getline (myFile, myText)) {
-        cout << myText << endl;
-      }
-      myFile.close();
-      // add new locations discovered in cutscene
-      addLocations("text_files/" + fileName + "_new_locations.txt");
-      // add new townsfolk discovered in cutscene
-      addTownsfolk("text_files/" + fileName + "_new_townsfolk.txt");
-      return true;
-    }
-
-    void addLocations(string fileName) {
-      string myText;
-      fstream myFile(fileName);
-      while (getline (myFile, myText)) {
-        locations.push_back(myText);
-      }
-      myFile.close();
-    }
-
-    void addTownsfolk(string fileName) {
-      string myText;
-      fstream myFile(fileName);
-      while (getline (myFile, myText)) {
-        townsfolk.push_back(myText);
-      }
-      myFile.close();
-    }
-
-    string selectATownsfolk() {
-      for (int i=0; i<townsfolk.size(); i++) {
-        cout << to_string(i+1) + " - " + townsfolk.at(i) << endl;
-      }
-      cout << to_string(townsfolk.size()+1) + " - Nevermind\n";
-      int selectNum;
-      cin >> selectNum;
-      while (selectNum < 1 || selectNum > townsfolk.size()+1) {
-        cout << "Invalid entry. Please enter a number between 1 and " + to_string(townsfolk.size()+1) + ".\n";
-        cin >> selectNum;
-      }
-      if (selectNum == townsfolk.size()+1) {
-        return "Nevermind";
-      }
-      return townsfolk.at(selectNum-1);
-    }
-
-    string selectALocation() {
-      for (int i=0; i<locations.size(); i++) {
-        cout << to_string(i+1) + " - " + locations.at(i) << endl;
-      }
-      cout << to_string(locations.size()+1) + " - Nevermind\n";
-      int selectNum;
-      cin >> selectNum;
-      while (selectNum < 1 || selectNum > locations.size()+1) {
-        cout << "Invalid entry. Please enter a number between 1 and " + to_string(locations.size()+1) + ".\n";
-        cin >> selectNum;
-      }
-      if (selectNum == locations.size()+1) {
-        return "Nevermind";
-      }
-      return locations.at(selectNum-1);
-    }
-
 };
 
 int main() {
