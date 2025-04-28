@@ -19,8 +19,7 @@ class Game {
     Game ();
 
     bool playCutscene(string fileName);
-    void addLocations(string fileName);
-    void addTownsfolk(string fileName);
+    bool alreadyAdded(string str, vector<string> vect);
     string selectATownsfolk();
     string selectALocation();
     string getMurderer();

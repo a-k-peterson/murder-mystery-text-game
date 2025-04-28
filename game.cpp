@@ -19,38 +19,62 @@ Game::Game () {
 }
 
 bool Game::playCutscene(string fileName) {
-    string myText;
+    bool add_townsfolk_flag = false;    // flag to add the following lines to townsfolk vectors
+    bool add_locations_flag = false;    // flag to add the following lines to locations vectors
+    vector<string> added_townsfolk;     // vector to hold only the new townsfolk that are not repeats
+    vector<string> added_locations;     // vector to hold only the new locations that are not repeats
+
+    string line;
     fstream myFile("text_files/" + fileName + ".txt");
     if (!myFile.good()) {
         return false;
     }
-    while (getline (myFile, myText)) {
-        cout << myText << endl;
+    while (getline (myFile, line)) {
+        if (line == "New Townsfolk:") { // if we read a line that says "New Townsfolk:"
+            add_townsfolk_flag = true;  // set townsfolk flag
+            add_locations_flag = false; // unset locations flag
+        }
+        if (line == "New Locations:") { // if we read a line that says "New Locations:"
+            add_locations_flag = true;  // set locations flag
+            add_townsfolk_flag = false; // unset townsfolk flag
+        }
+        // add line to townsfolk vectors (if flag is set, not a repeat, not a blank line, and not the flag set line)
+        if (add_townsfolk_flag && !alreadyAdded(line, townsfolk) && line != "" && line != "New Townsfolk:") {
+            townsfolk.push_back(line);
+            added_townsfolk.push_back(line);
+        }
+        // add line to locations vectors (if flag is set, not a repeat, not a blank line, and not the flag set line)
+        if (add_locations_flag && !alreadyAdded(line, locations) && line != "" && line != "New Locations:") {
+            locations.push_back(line);
+            added_locations.push_back(line);
+        }
+        if (!add_townsfolk_flag && !add_locations_flag) {
+            cout << line << endl;       // print lines in cutscene
+        }
+        
     }
     myFile.close();
-    // add new locations discovered in cutscene
-    addLocations("text_files/" + fileName + "_new_locations.txt");
-    // add new townsfolk discovered in cutscene
-    addTownsfolk("text_files/" + fileName + "_new_townsfolk.txt");
+
+    // print only the new townfolk that are not repeats
+    cout << "New Townsfolk:\n";
+    for (auto i: added_townsfolk) {
+        cout << i << endl;
+    }
+    // print only the new locations that are not repeats
+    cout << "New Locations:\n";
+    for (auto i: added_locations) {
+        cout << i << endl;
+    }
     return true;
 }
 
-void Game::addLocations(string fileName) {
-    string myText;
-    fstream myFile(fileName);
-    while (getline (myFile, myText)) {
-        locations.push_back(myText);
+bool Game::alreadyAdded(string str, vector<string> vect) {
+    for (auto i: vect) {
+        if (i == str) {
+            return true;
+        }
     }
-    myFile.close();
-}
-
-void Game::addTownsfolk(string fileName) {
-    string myText;
-    fstream myFile(fileName);
-    while (getline (myFile, myText)) {
-        townsfolk.push_back(myText);
-    }
-    myFile.close();
+    return false;
 }
 
 string Game::selectATownsfolk() {
