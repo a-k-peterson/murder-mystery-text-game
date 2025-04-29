@@ -20,6 +20,8 @@ class Game {
 
     bool playCutscene(string fileName);
     bool alreadyAdded(string str, vector<string> vect);
+    int isValidChoice(string input, int min, int max);
+    int chooseAction();
     string selectATownsfolk();
     string selectALocation();
     string getMurderer();

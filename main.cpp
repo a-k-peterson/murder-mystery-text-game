@@ -44,18 +44,10 @@ int main() {
 
     // loop for each hour in day
     while (game.hour <= game.hours && game.accused == "") {
-      cout << "\n\nDay: " + to_string(game.day) + "/" + to_string(game.days);
-      cout << "\tHour: " + to_string(game.hour) + "/" + to_string(game.hours) + "\n";
-      cout << "What would you like to do?\n";
-      cout << "1 - Interview someone\n";
-      cout << "2 - Inspect a location\n";
-      cout << "3 - Background check someone\n";
-      cout << "4 - Solve the case!\n";
-      cout << "5 - Quit\n";
-      int choice;
-      cin >> choice;
+      // choose an action
+      int choice = game.chooseAction();
       switch (choice) {
-        case 1:
+        case 1: // interview someone
           {
             cout << "Who would you like to interview?\n";
             string selected = game.selectATownsfolk();
@@ -72,7 +64,7 @@ int main() {
             break;
           }
 
-        case 2:
+        case 2: // inspect a location
           {
             cout << "Which location would you like to inspect?\n";
             string selected = game.selectALocation();
@@ -89,7 +81,7 @@ int main() {
             break;
           }
 
-        case 3:
+        case 3: // background check someone
           {
             cout << "Which person would you like to run a background check on?\n";
             string selected = game.selectATownsfolk();
@@ -101,7 +93,7 @@ int main() {
             break;
           }
 
-        case 4:
+        case 4: // solve the case!
           {
             cout << "Which person will you charge with murder?\n";
             string selected = game.selectATownsfolk();
@@ -111,7 +103,7 @@ int main() {
             game.accused = selected;
             break;
           }
-        case 5:
+        case 0: // quit
           {
             cout << "Are you sure you want to quit the game? (y/n)\n";
             string sure;
@@ -126,11 +118,9 @@ int main() {
             }
             break;
           }
-
-        default:
-          cout << "Invalid entry. Please enter a number between 1 and 5.\n";
       } // end switch
     } // end loop for each hour
+
     // break if you are ready to accuse someone
     if (game.accused != "") {
       break;
@@ -139,7 +129,7 @@ int main() {
     cout << "Time to call it a day...\n";
     game.hour = 1;
     game.day++;
-    
+
   } // end loop for each day
 
   // Ending 1 - player ran out of time

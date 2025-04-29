@@ -77,38 +77,73 @@ bool Game::alreadyAdded(string str, vector<string> vect) {
     return false;
 }
 
+int Game::isValidChoice(string input, int min, int max) {
+    if (input.length() != 1) {
+        return -1;
+    }
+    if (!isdigit(input[0])) {
+        return -1;
+    }
+    int inputInt = stoi(input);
+    if (inputInt < min || inputInt > max) {
+        return -1;
+    }
+    return inputInt;
+}
+
+int Game::chooseAction() {
+    cout << "\n\nDay: " + to_string(day) + "/" + to_string(days);
+    cout << "\tHour: " + to_string(hour) + "/" + to_string(hours) + "\n";
+    cout << "What would you like to do?\n";
+    cout << "1 - Interview someone\n";
+    cout << "2 - Inspect a location\n";
+    cout << "3 - Background check someone\n";
+    cout << "4 - Solve the case!\n";
+    cout << "0 - Quit\n";
+
+    string choice;
+    getline(cin, choice);
+    while (isValidChoice(choice, 0, 4) == -1) {
+        cout << "Invalid entry. Please enter a number between 0 and 4.\n";
+        getline(cin, choice);
+    }
+    return isValidChoice(choice, 0, 4);
+}
+
 string Game::selectATownsfolk() {
     for (int i=0; i<townsfolk.size(); i++) {
         cout << to_string(i+1) + " - " + townsfolk.at(i) << endl;
     }
-    cout << to_string(townsfolk.size()+1) + " - Nevermind\n";
-    int selectNum;
-    cin >> selectNum;
-    while (selectNum < 1 || selectNum > townsfolk.size()+1) {
-        cout << "Invalid entry. Please enter a number between 1 and " + to_string(townsfolk.size()+1) + ".\n";
-        cin >> selectNum;
+    cout << "0 - Nevermind\n";
+    string choice;
+    getline(cin, choice);
+    while (isValidChoice(choice, 0, townsfolk.size()) == -1) {
+        cout << "Invalid entry. Please enter a number between 0 and " + to_string(townsfolk.size()) + ".\n";
+        getline(cin, choice);
     }
-    if (selectNum == townsfolk.size()+1) {
+    int validChoice = isValidChoice(choice, 0, townsfolk.size());
+    if (validChoice == 0) {
         return "Nevermind";
     }
-    return townsfolk.at(selectNum-1);
+    return townsfolk.at(validChoice-1);
 }
 
 string Game::selectALocation() {
     for (int i=0; i<locations.size(); i++) {
         cout << to_string(i+1) + " - " + locations.at(i) << endl;
     }
-    cout << to_string(locations.size()+1) + " - Nevermind\n";
-    int selectNum;
-    cin >> selectNum;
-    while (selectNum < 1 || selectNum > locations.size()+1) {
-        cout << "Invalid entry. Please enter a number between 1 and " + to_string(locations.size()+1) + ".\n";
-        cin >> selectNum;
+    cout << "0 - Nevermind\n";
+    string choice;
+    getline(cin, choice);
+    while (isValidChoice(choice, 0, locations.size()) == -1) {
+        cout << "Invalid entry. Please enter a number between 0 and " + to_string(locations.size()) + ".\n";
+        getline(cin, choice);
     }
-    if (selectNum == locations.size()+1) {
+    int validChoice = isValidChoice(choice, 0, locations.size());
+    if (validChoice == 0) {
         return "Nevermind";
     }
-    return locations.at(selectNum-1);
+    return locations.at(validChoice-1);
 }
 
 string Game::getMurderer() {
