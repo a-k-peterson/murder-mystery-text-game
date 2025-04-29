@@ -22,8 +22,7 @@ class Game {
     bool alreadyAdded(string str, vector<string> vect);
     int isValidChoice(string input, int min, int max);
     int chooseAction();
-    string selectATownsfolk();
-    string selectALocation();
+    string chooseSubject(vector<string>);
     string getMurderer();
 
 };

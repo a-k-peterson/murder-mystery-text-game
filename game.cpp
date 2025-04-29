@@ -110,40 +110,22 @@ int Game::chooseAction() {
     return isValidChoice(choice, 0, 4);
 }
 
-string Game::selectATownsfolk() {
-    for (int i=0; i<townsfolk.size(); i++) {
-        cout << to_string(i+1) + " - " + townsfolk.at(i) << endl;
+string Game::chooseSubject(vector<string> subjects) {
+    for (int i=0; i<subjects.size(); i++) {
+        cout << to_string(i+1) + " - " + subjects.at(i) << endl;
     }
     cout << "0 - Nevermind\n";
     string choice;
     getline(cin, choice);
-    while (isValidChoice(choice, 0, townsfolk.size()) == -1) {
-        cout << "Invalid entry. Please enter a number between 0 and " + to_string(townsfolk.size()) + ".\n";
+    while (isValidChoice(choice, 0, subjects.size()) == -1) {
+        cout << "Invalid entry. Please enter a number between 0 and " + to_string(subjects.size()) + ".\n";
         getline(cin, choice);
     }
-    int validChoice = isValidChoice(choice, 0, townsfolk.size());
+    int validChoice = isValidChoice(choice, 0, subjects.size());
     if (validChoice == 0) {
         return "Nevermind";
     }
-    return townsfolk.at(validChoice-1);
-}
-
-string Game::selectALocation() {
-    for (int i=0; i<locations.size(); i++) {
-        cout << to_string(i+1) + " - " + locations.at(i) << endl;
-    }
-    cout << "0 - Nevermind\n";
-    string choice;
-    getline(cin, choice);
-    while (isValidChoice(choice, 0, locations.size()) == -1) {
-        cout << "Invalid entry. Please enter a number between 0 and " + to_string(locations.size()) + ".\n";
-        getline(cin, choice);
-    }
-    int validChoice = isValidChoice(choice, 0, locations.size());
-    if (validChoice == 0) {
-        return "Nevermind";
-    }
-    return locations.at(validChoice-1);
+    return subjects.at(validChoice-1);
 }
 
 string Game::getMurderer() {

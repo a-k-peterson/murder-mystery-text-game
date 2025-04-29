@@ -50,7 +50,7 @@ int main() {
         case 1: // interview someone
           {
             cout << "Who would you like to interview?\n";
-            string selected = game.selectATownsfolk();
+            string selected = game.chooseSubject(game.townsfolk);
             if (selected == "Nevermind") {
               break;
             }
@@ -67,7 +67,7 @@ int main() {
         case 2: // inspect a location
           {
             cout << "Which location would you like to inspect?\n";
-            string selected = game.selectALocation();
+            string selected = game.chooseSubject(game.locations);
             if (selected == "Nevermind") {
               break;
             }
@@ -84,7 +84,7 @@ int main() {
         case 3: // background check someone
           {
             cout << "Which person would you like to run a background check on?\n";
-            string selected = game.selectATownsfolk();
+            string selected = game.chooseSubject(game.townsfolk);
             if (selected == "Nevermind") {
               break;
             }
@@ -96,7 +96,7 @@ int main() {
         case 4: // solve the case!
           {
             cout << "Which person will you charge with murder?\n";
-            string selected = game.selectATownsfolk();
+            string selected = game.chooseSubject(game.townsfolk);
             if (selected == "Nevermind") {
               break;
             }
