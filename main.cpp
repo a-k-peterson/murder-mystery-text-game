@@ -24,21 +24,23 @@ int main() {
   Game game;
   Player player;
 
-  cout << "\nCOOL TITLE OF GAME\nBy Abby Peterson\nInspired by Midsomer Murders and Death in Paradise\n\n";
+  cout << "\nMURDER ON COMMAND\nBy Abby Peterson Ebeling\nInspired by Midsomer Murders and Death in Paradise\n\n";
 
   // describe opener
-  cout << "A spooky and intriguing opening...\n\n";
+  game.playCutscene("opener");
 
   // begin the investigation
-  cout << "You are a Detective Chief Inspector (DCI) for the City of Bromsby and its outlying villages.\n";
-  cout << "You are expected to solve any murders that occur within 3 days. You have time for 10 actions each day.\n";
+  cout << "You have recently been promoted to Detective Inspector (DI) for the City of Bromsby and its outlying villages.\n";
+  cout << "For your first case as a DI, you will be given " + to_string(game.days); 
+  cout << " days to solve the case on your own before a Detective Chief Inspector (DCI) is brought in to assist you. ";
+  cout << "Your goal is to prove your abilities by solving the case within " + to_string(game.days) + " days.\n";
   cout << "Let's begin!\n\n";
 
   // loop for each day
   while (game.day <= game.days) {
     // cutscene for beginning of each day
     cout << "Morning of day " + to_string(game.day) + ":\n";
-    game.playCutscene("morning_" + to_string(game.day));
+    game.playCutscene("day_" + to_string(game.day) + "/morning");
 
     // loop for each hour in day
     while (game.hour <= game.hours && game.accused == "") {
@@ -61,7 +63,7 @@ int main() {
               break;
             }
             // interview the person selected
-            string scene = "day_" + to_string(game.day) + "_" + selected;
+            string scene = "day_" + to_string(game.day) + "/" + selected;
             if (!game.playCutscene(scene)) {
               // they had nothing to say
               cout << selected + " had nothing new to say...\n";
@@ -78,7 +80,7 @@ int main() {
               break;
             }
             // inspect the location selected
-            string scene = "day_" + to_string(game.day) + "_" + selected;
+            string scene = "day_" + to_string(game.day) + "/" + selected;
             if (!game.playCutscene(scene)) {
               // there is nothing new to see
               cout << selected + " looks the same...\n";
@@ -127,8 +129,8 @@ int main() {
 
         default:
           cout << "Invalid entry. Please enter a number between 1 and 5.\n";
-      }
-    }
+      } // end switch
+    } // end loop for each hour
     // break if you are ready to accuse someone
     if (game.accused != "") {
       break;
@@ -137,7 +139,8 @@ int main() {
     cout << "Time to call it a day...\n";
     game.hour = 1;
     game.day++;
-  }
+    
+  } // end loop for each day
 
   // Ending 1 - player ran out of time
   if (game.accused == "") {
