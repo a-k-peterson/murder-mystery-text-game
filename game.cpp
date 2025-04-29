@@ -55,16 +55,22 @@ bool Game::playCutscene(string fileName) {
     }
     myFile.close();
 
-    // print only the new townfolk that are not repeats
-    cout << "New Townsfolk:\n";
-    for (auto i: added_townsfolk) {
-        cout << i << endl;
+    // if there are new townsfolk, print only the ones that are not repeats
+    if (!added_townsfolk.empty()) {
+        cout << "New Townsfolk:\n";
+        for (auto i: added_townsfolk) {
+            cout << i << endl;
+        }
     }
-    // print only the new locations that are not repeats
-    cout << "New Locations:\n";
-    for (auto i: added_locations) {
-        cout << i << endl;
+    
+    // if there are new locations, print only the ones that are not repeats
+    if (!added_locations.empty()) {
+        cout << "New Locations:\n";
+        for (auto i: added_locations) {
+            cout << i << endl;
+        }
     }
+    
     return true;
 }
 
