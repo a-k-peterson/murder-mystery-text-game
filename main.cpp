@@ -48,7 +48,7 @@ int main() {
       int choice = game.chooseAction();
       switch (choice) {
         case 1: // interview someone
-          {
+        {
             cout << "Who would you like to interview?\n";
             string selected = game.chooseSubject(game.townsfolk);
             if (selected == "Nevermind") {
@@ -57,54 +57,76 @@ int main() {
             // interview the person selected
             string scene = "day_" + to_string(game.day) + "/" + selected;
             if (!game.playCutscene(scene)) {
-              // they had nothing to say
+              // if no file found -> they had nothing new to say
               cout << selected + " had nothing new to say...\n";
             }
             game.hour++;
             break;
-          }
+        }
 
-        case 2: // inspect a location
-          {
-            cout << "Which location would you like to inspect?\n";
-            string selected = game.chooseSubject(game.locations);
-            if (selected == "Nevermind") {
-              break;
-            }
-            // inspect the location selected
-            string scene = "day_" + to_string(game.day) + "/" + selected;
-            if (!game.playCutscene(scene)) {
-              // there is nothing new to see
-              cout << selected + " looks the same...\n";
-            }
-            game.hour++;
+        case 2: // review CC TV footage
+        {
+          cout << "Which location's CC TV footage would you like to review?\n";
+          string selected = game.chooseSubject(game.locations);
+          if (selected == "Nevermind") {
             break;
           }
+          // review footage
+          string scene = "day_" + to_string(game.day) + "/cctv_footage/" + selected + "_cctv";
+          if (!game.playCutscene(scene)) {
+            // if no file found -> there is no footage
+            cout << selected + " has no CC TV cameras installed...\n";
+          }
+          game.hour++;
+          break;
+        }
 
-        case 3: // background check someone
-          {
-            cout << "Which person would you like to run a background check on?\n";
+        case 3: // run a background check
+        {
+            cout << "Who would you like to run a background check on?\n";
             string selected = game.chooseSubject(game.townsfolk);
             if (selected == "Nevermind") {
               break;
             }
             // run a background check on the person selected
+            string scene = "background_checks/" + selected + "_background";
+            if (!game.playCutscene(scene)) {
+              // if no file found -> not in the system
+              cout << "There are no records of a \"" + selected + "\" in the system...\n";
+            }
             game.hour++;
             break;
-          }
+        }
 
-        case 4: // solve the case!
-          {
-            cout << "Which person will you charge with murder?\n";
+        case 4: // search a location
+        {
+            cout << "Which location would you like to search?\n";
+            string selected = game.chooseSubject(game.locations);
+            if (selected == "Nevermind") {
+              break;
+            }
+            // search the location selected
+            string scene = "day_" + to_string(game.day) + "/search_warrents/" + selected + "_search";
+            if (!game.playCutscene(scene)) {
+              // if no file found -> you don't have a search warrent
+              cout << "You don't have enough evidence to get a search warrent for " + selected + "...\n";
+            }
+            game.hour++;
+            break;
+        }
+
+        case 5: // solve the case!
+        {
+            cout << "Who will you charge with murder?\n";
             string selected = game.chooseSubject(game.townsfolk);
             if (selected == "Nevermind") {
               break;
             }
             game.accused = selected;
             break;
-          }
+        }
         case 0: // quit
-          {
+        {
             cout << "Are you sure you want to quit the game? (y/n)\n";
             string sure;
             getline(cin, sure);
@@ -117,7 +139,7 @@ int main() {
               return 0;
             }
             break;
-          }
+        }
       } // end switch
     } // end loop for each hour
 

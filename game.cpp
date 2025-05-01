@@ -70,7 +70,7 @@ bool Game::playCutscene(string fileName) {
             cout << i << endl;
         }
     }
-    
+
     return true;
 }
 
@@ -102,18 +102,19 @@ int Game::chooseAction() {
     cout << "\tHour: " + to_string(hour) + "/" + to_string(hours) + "\n";
     cout << "What would you like to do?\n";
     cout << "1 - Interview someone\n";
-    cout << "2 - Inspect a location\n";
-    cout << "3 - Background check someone\n";
-    cout << "4 - Solve the case!\n";
+    cout << "2 - Review CC TV footage\n";
+    cout << "3 - Run a background check\n";
+    cout << "4 - Search a location\n";
+    cout << "5 - Solve the case!\n";
     cout << "0 - Quit\n";
 
     string choice;
     getline(cin, choice);
-    while (isValidChoice(choice, 0, 4) == -1) {
-        cout << "Invalid entry. Please enter a number between 0 and 4.\n";
+    while (isValidChoice(choice, 0, 5) == -1) {
+        cout << "Invalid entry. Please enter a number between 0 and 5.\n";
         getline(cin, choice);
     }
-    return isValidChoice(choice, 0, 4);
+    return isValidChoice(choice, 0, 5);
 }
 
 string Game::chooseSubject(vector<string> subjects) {
