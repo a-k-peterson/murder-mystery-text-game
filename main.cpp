@@ -107,12 +107,12 @@ int main() {
           {
             cout << "Are you sure you want to quit the game? (y/n)\n";
             string sure;
-            cin >> sure;
-            while (sure != "y" && sure != "n") {
+            getline(cin, sure);
+            while (sure != "y" && sure != "n" && sure != "Y" && sure != "N") {
               cout << "Invalid entry. Please enter y to quit or n to continue.\n";
-              cin >> sure;
+              getline(cin, sure);
             }
-            if (sure == "y") {
+            if (sure == "y" || sure == "Y") {
               cout << "Goodbye";
               return 0;
             }
