@@ -12,8 +12,8 @@ Game::Game () {
     //const int hours = 8;  // number of hours per day
     this->day = 1;      // current day
     this->hour = 1;     // current hour
-    this->locations = {};   // known locations - will grow as the game is played
     this->townsfolk = {};   // known townsfolk - will grow as the game is played
+    this->locations = {};   // known locations - will grow as the game is played
     this->accused = "";             // who the player accuses of murder
     this->murderer = getMurderer(); // murderer identity kept in text files to avoid spoilers
 }
@@ -21,8 +21,8 @@ Game::Game () {
 bool Game::playCutscene(string fileName) {
     bool add_townsfolk_flag = false;    // flag to add the following lines to townsfolk vectors
     bool add_locations_flag = false;    // flag to add the following lines to locations vectors
-    vector<string> added_townsfolk;     // vector to hold only the new townsfolk that are not repeats
-    vector<string> added_locations;     // vector to hold only the new locations that are not repeats
+    vector<string> added_townsfolk;    // vector to hold names of only the new townsfolk that are not repeats
+    vector<string> added_locations;    // vector to hold names of only the new locations that are not repeats
 
     string line;
     fstream myFile("text_files/" + fileName + ".txt");
@@ -40,12 +40,14 @@ bool Game::playCutscene(string fileName) {
         }
         // add line to townsfolk vectors (if flag is set, not a repeat, not a blank line, and not the flag set line)
         if (add_townsfolk_flag && !alreadyAdded(line, townsfolk) && line != "" && line != "New Townsfolk:") {
-            townsfolk.push_back(line);
+            NPC addMe(line); 
+            townsfolk.push_back(addMe);
             added_townsfolk.push_back(line);
         }
         // add line to locations vectors (if flag is set, not a repeat, not a blank line, and not the flag set line)
         if (add_locations_flag && !alreadyAdded(line, locations) && line != "" && line != "New Locations:") {
-            locations.push_back(line);
+            Location addMe(line);
+            locations.push_back(addMe);
             added_locations.push_back(line);
         }
         if (!add_townsfolk_flag && !add_locations_flag) {
@@ -74,9 +76,9 @@ bool Game::playCutscene(string fileName) {
     return true;
 }
 
-bool Game::alreadyAdded(string str, vector<string> vect) {
+bool Game::alreadyAdded(string str, vector<Subject> vect) {
     for (auto i: vect) {
-        if (i == str) {
+        if (i.name == str) {
             return true;
         }
     }
@@ -117,9 +119,9 @@ int Game::chooseAction() {
     return isValidChoice(choice, 0, 5);
 }
 
-string Game::chooseSubject(vector<string> subjects) {
+string Game::chooseSubject(vector<Subject> subjects) {
     for (int i=0; i<subjects.size(); i++) {
-        cout << to_string(i+1) + " - " + subjects.at(i) << endl;
+        cout << to_string(i+1) + " - " + subjects.at(i).name << endl;
     }
     cout << "0 - Nevermind\n";
     string choice;
@@ -132,7 +134,7 @@ string Game::chooseSubject(vector<string> subjects) {
     if (validChoice == 0) {
         return "Nevermind";
     }
-    return subjects.at(validChoice-1);
+    return subjects.at(validChoice-1).name;
 }
 
 string Game::getMurderer() {
