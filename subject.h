@@ -9,6 +9,7 @@ class Subject {
   public:
     string name;
     string description;
+    bool discovered;
     int lastInteraction;
 
     Subject ();
@@ -18,14 +19,14 @@ class NPC : public Subject {
   public:
     bool alive;
 
-    NPC (string nameIn);
+    NPC (string nameIn, string descriptionIn);
 };
 
 class Location : public Subject {
   public:
-    bool warrent;
+    bool warrant;
 
-    Location (string nameIn);
+    Location (string nameIn, string descriptionIn);
 };
 
 #endif

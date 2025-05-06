@@ -50,7 +50,14 @@ int main() {
         case 1: // interview someone
         {
             cout << "Who would you like to interview?\n";
-            string selected = game.chooseSubject(game.townsfolk);
+            vector<Subject> canInterview;
+            for (auto i : game.townsfolk) {
+              if (i.alive && i.discovered) {
+                canInterview.push_back(i);
+              }
+            }
+            string selected = game.chooseSubject(canInterview);
+
             if (selected == "Nevermind") {
               break;
             }
@@ -67,7 +74,13 @@ int main() {
         case 2: // review CC TV footage
         {
           cout << "Which location's CC TV footage would you like to review?\n";
-          string selected = game.chooseSubject(game.locations);
+          vector<Subject> canViewCCTV;
+          for (auto i : game.locations) {
+            if (i.discovered) {
+              canViewCCTV.push_back(i);
+            }
+          }
+          string selected = game.chooseSubject(canViewCCTV);
           if (selected == "Nevermind") {
             break;
           }
@@ -84,7 +97,13 @@ int main() {
         case 3: // run a background check
         {
             cout << "Who would you like to run a background check on?\n";
-            string selected = game.chooseSubject(game.townsfolk);
+            vector<Subject> canBackgroundCheck;
+            for (auto i : game.townsfolk) {
+              if (i.discovered) {
+                canBackgroundCheck.push_back(i);
+              }
+            }
+            string selected = game.chooseSubject(canBackgroundCheck);
             if (selected == "Nevermind") {
               break;
             }
@@ -101,7 +120,13 @@ int main() {
         case 4: // search a location
         {
             cout << "Which location would you like to search?\n";
-            string selected = game.chooseSubject(game.locations);
+            vector<Subject> canSearch;
+            for (auto i : game.locations) {
+              if (i.warrant && i.discovered) {
+                canSearch.push_back(i);
+              }
+            }
+            string selected = game.chooseSubject(canSearch);
             if (selected == "Nevermind") {
               break;
             }
@@ -118,7 +143,13 @@ int main() {
         case 5: // solve the case!
         {
             cout << "Who will you charge with murder?\n";
-            string selected = game.chooseSubject(game.townsfolk);
+            vector<Subject> canCharge;
+            for (auto i : game.townsfolk) {
+              if (i.discovered) {
+                canCharge.push_back(i);
+              }
+            }
+            string selected = game.chooseSubject(canCharge);
             if (selected == "Nevermind") {
               break;
             }

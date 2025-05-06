@@ -1,8 +1,11 @@
 # ignore everything in the text_files folder
-text_files/
+game_files/
 
 # ignore the vs code folder
 .vscode/
 
 # ignore the executable
 /main.exe
+
+# ignore json library
+nlohmann/

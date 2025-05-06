@@ -7,19 +7,22 @@ using namespace std;
 Subject::Subject () {
     this->name = "";
     this->description = "";
+    this->discovered = false;
     this->lastInteraction = 0;
 }
 
-NPC::NPC (string nameIn) {
+NPC::NPC (string nameIn, string descriptionIn) {
     this->name = nameIn;
-    this->description = "";
+    this->description = descriptionIn;
+    this->discovered = false;
     this->lastInteraction = 0;
     this->alive = true;
 }
 
-Location::Location (string nameIn) {
+Location::Location (string nameIn, string descriptionIn) {
     this->name = nameIn;
-    this->description = "";
+    this->description = descriptionIn;
+    this->discovered = false;
     this->lastInteraction = 0;
-    this->warrent = false;
+    this->warrant = false;
 }
