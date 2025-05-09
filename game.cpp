@@ -187,7 +187,12 @@ int Game::chooseAction() {
 
 string Game::chooseSubject(vector<Subject> subjects) {
     for (int i=0; i<subjects.size(); i++) {
-        cout << to_string(i+1) + " - " + subjects.at(i).name << endl;
+        cout << to_string(i+1) + " - " + subjects.at(i).name;
+        if (subjects.at(i).description == "") {
+            cout << endl;
+        } else {
+            cout << " (" + subjects.at(i).description + ")\n";
+        }
     }
     cout << "0 - Nevermind\n";
     string choice;
