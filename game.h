@@ -23,6 +23,8 @@ class Game {
     Game ();
 
     void getGameData();
+    void getSaveData();
+    void saveGame();
     bool playCutscene(string fileName);
 
     bool discoverIfNew(string str, vector<Subject> vect, bool people);

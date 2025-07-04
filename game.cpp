@@ -20,6 +20,7 @@ Game::Game () {
     this->murderer;     // murderer name
 
     getGameData();
+    getSaveData();
 }
 
 void Game::getGameData() {
@@ -41,6 +42,89 @@ void Game::getGameData() {
 
     // get murderer from json file
     murderer = jsonData["murderer"];
+
+}
+
+void Game::getSaveData() {
+    ifstream file("game_files/save_data/save_A.json");
+    json jsonData = json::parse(file);
+    file.close();
+
+    if (jsonData["day"] == 0) {
+        // There is no saved game to load
+        return;
+    }
+
+    cout << "\nLoad saved game or start a new game? (Starting a new game will overwrite save file!)\n";
+    cout << "1 - Load saved game\n";
+    cout << "2 - Start new game\n";
+
+    string choice;
+    getline(cin, choice);
+    while (isValidChoice(choice, 1, 2) == -1) {
+        cout << "Invalid entry. Please enter a number between 1 and 2.\n";
+        getline(cin, choice);
+    }
+    switch (isValidChoice(choice, 1, 2)) {
+        case 1: // Load saved game
+        {
+            // what day is it?
+            day = jsonData["day"];
+
+            // what hour is it?
+            hour = jsonData["hour"];
+
+            // which townsfolk have been discovered?
+            for (auto person : jsonData["discovered townsfolk"]) {
+                discoverIfNew(person, townsfolk);
+            }
+
+            // which locations have been discovered?
+            for (auto place : jsonData["discovered locations"]) {
+                discoverIfNew(place, locations);
+            }
+        }
+
+        case 2: // Start new game - override save file
+        {
+            saveGame();
+        }
+    }
+
+}
+
+void Game::saveGame() {
+    cout << "Saving...\n";
+    json j;
+
+    // what day is it?
+    j["day"] = day;
+
+    // what hour is it?
+    j["hour"] = hour;
+
+    // which townsfolk have been discovered?
+    vector<string> discoveredTownsfolk;
+    for (auto i : townsfolk) {
+        if (i.discovered) {
+            discoveredTownsfolk.push_back(i.name);
+        }
+    }
+    j["discovered townsfolk"] = discoveredTownsfolk;
+
+    // which locations have been discovered?
+    vector<string> discoveredLocations;
+    for (auto i : locations) {
+        if (i.discovered) {
+            discoveredLocations.push_back(i.name);
+        }
+    }
+    j["discovered locations"] = discoveredLocations;
+
+    // write the json data to save file
+    ofstream saveFile("game_files/save_data/save_A.json");
+    saveFile << setw(4) << j << endl;
+    saveFile.close();
 
 }
 

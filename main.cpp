@@ -24,7 +24,7 @@ int main() {
   Game game;
   Player player;
 
-  cout << "\nMURDER ON COMMAND\nBy Abby Peterson Ebeling\nInspired by Midsomer Murders and Death in Paradise\n\n";
+  cout << "\nMURDER ON COMMAND\nBy Abby Peterson Ebeling\nInspired by Midsomer Murders, Vera, and Death in Paradise\n\n";
 
   // describe opener
   game.playCutscene("opener");
@@ -36,10 +36,13 @@ int main() {
   cout << "Your goal is to prove your abilities by solving the case within " + to_string(game.days) + " days.\n";
   cout << "Let's begin!\n\n";
 
+  // play "night before" cutscene (optional depending on story)
+  game.playCutscene("night_before");
+
   // loop for each day
   while (game.day <= game.days) {
     // cutscene for beginning of each day
-    cout << "Morning of day " + to_string(game.day) + ":\n";
+    cout << "\nMorning of day " + to_string(game.day) + ":\n";
     game.playCutscene("day_" + to_string(game.day) + "/morning");
 
     // loop for each hour in day
@@ -158,14 +161,15 @@ int main() {
         }
         case 0: // quit
         {
-            cout << "Are you sure you want to quit the game? (y/n)\n";
+            cout << "Your progress will be saved. Are you sure you want to quit the game? (y/n)\n";
             string sure;
             getline(cin, sure);
             while (sure != "y" && sure != "n" && sure != "Y" && sure != "N") {
-              cout << "Invalid entry. Please enter y to quit or n to continue.\n";
+              cout << "Invalid entry. Please enter y to save and quit or n to continue playing.\n";
               getline(cin, sure);
             }
             if (sure == "y" || sure == "Y") {
+              game.saveGame();
               cout << "Goodbye";
               return 0;
             }
