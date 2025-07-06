@@ -71,14 +71,24 @@ void Game::loadGameState(string fileName) {
 
     // get townsfolk from json file
     for (auto person : gameData["townsfolk"]) {
-        NPC npc(person["name"], person["description"], person["discovered"], person["alive"]);
-        townsfolk.push_back(npc);
+        if (fileName == newGameFileName) {
+            NPC npc(person["name"], person["description"]);
+            townsfolk.push_back(npc);
+        } else {
+            NPC npc(person["name"], person["description"], person["discovered"], person["alive"]);
+            townsfolk.push_back(npc);
+        }
     }
 
     // get locations from json file
     for (auto place : gameData["locations"]) {
-        Location location(place["name"], place["description"], place["discovered"], place["warrant"]);
-        locations.push_back(location);
+        if (fileName == newGameFileName) {
+            Location location(place["name"], place["description"]);
+            locations.push_back(location);
+        } else {
+            Location location(place["name"], place["description"], place["discovered"], place["warrant"]);
+            locations.push_back(location);
+        }
     }
 
     // get murderer from json file
