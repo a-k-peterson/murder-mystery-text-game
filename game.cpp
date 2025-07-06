@@ -139,61 +139,101 @@ void Game::saveGame() {
 }
 
 bool Game::playCutscene(string fileName) {
-    bool add_townsfolk_flag = false;   // flag to add the following lines to townsfolk vectors
-    bool add_locations_flag = false;   // flag to add the following lines to locations vectors
-    vector<string> added_townsfolk;    // vector to hold names of only the new townsfolk that are not repeats - for printing
-    vector<string> added_locations;    // vector to hold names of only the new locations that are not repeats - for printing
+    string newTownsfolkLine = "New Townsfolk:";
+    string newLocationsLine = "New Locations:";
+    string newlyDeceasedLine = "Newly Deceased:";
+
+    string flag = "";
+    int flagInt = 0;
+
+    vector<string> newTownsfolk;    // list of new townsfolk for printing
+    vector<string> newLocations;    // list of new locations for printing
+    vector<string> newlyDeceased;   // list of newly deceased for printing
 
     string line;
-    fstream myFile("game_files/" + fileName + ".txt");
-    if (!myFile.good()) {
+    fstream cutsceneFile("game_files/" + fileName + ".txt");
+    if (!cutsceneFile.good()) {
         return false;
     }
-    while (getline (myFile, line)) {
-        if (line == "New Townsfolk:") { // if we read a line that says "New Townsfolk:"
-            add_townsfolk_flag = true;  // set townsfolk flag
-            add_locations_flag = false; // unset locations flag
+    while (getline (cutsceneFile, line)) {
+        if (line == newTownsfolkLine) {
+            flag = newTownsfolkLine;
+            flagInt = 1;
+        } else if (line == newLocationsLine) {
+            flag = newLocationsLine;
+            flagInt = 2;
+        } else if (line == newlyDeceasedLine) {
+            flag = newlyDeceasedLine;
+            flagInt = 3;
         }
-        if (line == "New Locations:") { // if we read a line that says "New Locations:"
-            add_locations_flag = true;  // set locations flag
-            add_townsfolk_flag = false; // unset townsfolk flag
-        }
-        // if flag is set, not a blank line, and not the flag set line
-        if (add_townsfolk_flag && line != "" && line != "New Townsfolk:") {
-            if (discoverIfNew(line, townsfolk)) {   // set discovered = true
-                added_townsfolk.push_back(line);    // add to print vector 
-            }
-        }
-        // if flag is set, not a blank line, and not the flag set line
-        if (add_locations_flag && line != "" && line != "New Locations:") {
-            if (discoverIfNew(line, locations)) {   // set discovered = true
-                added_locations.push_back(line);    // add to print vector 
-            }
-        }
-        if (!add_townsfolk_flag && !add_locations_flag) {
-            cout << line << endl;       // print lines in cutscene
-        }
-        
-    }
-    myFile.close();
 
-    // if there are new townsfolk, print only the ones that are not repeats
-    if (!added_townsfolk.empty()) {
-        cout << "\nNew Townsfolk:\n";
-        for (auto i: added_townsfolk) {
+        if (flag == "") {                               // it's a regular line before the info section, just print it
+            cout << line << endl;
+            continue;
+        } else if (line == flag || line == "") {        // it's the flag set line, or a blank line, ignore it
+            continue;
+        } 
+
+        switch (flagInt) {                              // it's a piece of info that needs to be added
+            case 1: // new townsfolk
+            {
+                if (discoverIfNew(line, townsfolk)) {   // set discovered = true
+                    newTownsfolk.push_back(line);       // add to print vector 
+                }
+                break;
+            }
+    
+            case 2: // new locations
+            {
+                if (discoverIfNew(line, locations)) {   // set discovered = true
+                    newLocations.push_back(line);       // add to print vector 
+                }
+                break;
+            }
+
+            case 3: // newly deceased
+            {
+                murder(line);                           // set alive = false
+                newlyDeceased.push_back(line);          // add to print vector 
+                break;
+            }
+        }
+    }
+    cutsceneFile.close();
+
+    // if there are new townsfolk, print them
+    if (!newTownsfolk.empty()) {
+        cout << endl << newTownsfolkLine << endl;
+        for (auto i: newTownsfolk) {
             cout << i << endl;
         }
     }
     
-    // if there are new locations, print only the ones that are not repeats
-    if (!added_locations.empty()) {
-        cout << "\nNew Locations:\n";
-        for (auto i: added_locations) {
+    // if there are new locations, print them
+    if (!newLocations.empty()) {
+        cout << endl << newLocationsLine << endl;
+        for (auto i: newLocations) {
+            cout << i << endl;
+        }
+    }
+
+    // if there are newly deceased, print them (assume no need to check for repeats)
+    if (!newlyDeceased.empty()) {
+        cout << endl << newlyDeceasedLine << endl;
+        for (auto i: newlyDeceased) {
             cout << i << endl;
         }
     }
 
     return true;
+}
+
+void Game::murder(string name) {
+    for (int i=0; i<townsfolk.size(); i++) {
+        if (townsfolk[i].name == name) {
+            townsfolk[i].alive = false;
+        }
+    }
 }
 
 bool Game::discoverIfNew(string str, vector<Subject> vect, bool people) {

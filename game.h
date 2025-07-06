@@ -30,6 +30,8 @@ class Game {
     
     bool playCutscene(string fileName);
 
+    void murder(string name);
+
     bool discoverIfNew(string str, vector<Subject> vect, bool people);
     bool discoverIfNew(string str, vector<NPC> vect);
     bool discoverIfNew(string str, vector<Location> vect);
