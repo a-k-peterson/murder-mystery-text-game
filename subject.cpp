@@ -11,6 +11,20 @@ Subject::Subject () {
     this->lastInteraction = 0;
 }
 
+Subject::Subject (string nameIn, string descriptionIn) {
+    this->name = nameIn;
+    this->description = descriptionIn;
+    this->discovered = false;
+    this->lastInteraction = 0;
+}
+
+Subject::Subject (string nameIn, string descriptionIn, bool discoveredIn) {
+    this->name = nameIn;
+    this->description = descriptionIn;
+    this->discovered = discoveredIn;
+    this->lastInteraction = 0;
+}
+
 NPC::NPC (string nameIn, string descriptionIn) {
     this->name = nameIn;
     this->description = descriptionIn;

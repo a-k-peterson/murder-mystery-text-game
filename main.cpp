@@ -30,7 +30,7 @@ int main() {
   game.playCutscene("opener");
 
   // begin the investigation
-  cout << "You have recently been promoted to Detective Inspector (DI) for the City of Bromsby and its outlying villages.\n";
+  cout << "You have recently been promoted to Detective Inspector (DI) for the City of <city> and its outlying villages.\n";
   cout << "For your first case as a DI, you will be given " + to_string(game.days); 
   cout << " days to solve the case on your own before a Detective Chief Inspector (DCI) is brought in to assist you. ";
   cout << "Your goal is to prove your abilities by solving the case within " + to_string(game.days) + " days.\n";
@@ -159,6 +159,30 @@ int main() {
             game.accused = selected;
             break;
         }
+
+        case 6: // view inventory
+        {
+            cout << "Which item would you like to inspect?\n";
+            vector<Subject> canInspect;
+            for (auto i : game.items) {
+              if (i.discovered) {
+                canInspect.push_back(i);
+              }
+            }
+            string selected = game.chooseSubject(canInspect);
+            if (selected == "Nevermind") {
+              break;
+            }
+            // inspect the item selected
+            string scene = "items/" + selected;
+            if (!game.playCutscene(scene)) {
+              // if no file found -> error
+              cout << "Error! No file " + selected + " found in items folder.\n";
+            }
+            //game.hour++;
+            break;
+        }
+
         case 0: // quit
         {
             cout << "Your progress will be saved. Are you sure you want to quit the game? (y/n)\n";

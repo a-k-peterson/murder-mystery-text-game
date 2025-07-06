@@ -17,6 +17,7 @@ Game::Game () {
     this->hour;     // current hour
     this->townsfolk;    // all townsfolk in the game
     this->locations;    // all locations in the game
+    this->items;        // all items in the game
     this->accused = ""; // who the player accuses of murder
     this->murderer;     // murderer name
 
@@ -91,6 +92,17 @@ void Game::loadGameState(string fileName) {
         }
     }
 
+    // get items from json file
+    for (auto thing : gameData["items"]) {
+        if (fileName == newGameFileName) {
+            Subject item(thing["name"], thing["description"]);
+            items.push_back(item);
+        } else {
+            Subject item(thing["name"], thing["description"], thing["discovered"]);
+            items.push_back(item);
+        }
+    }
+
     // get murderer from json file
     murderer = gameData["murderer"];
 
@@ -128,6 +140,16 @@ void Game::saveGame() {
     }
     saveData["locations"] = jLocations;
 
+    // save items vector
+    json jItems;
+    for (auto i : items) {
+        string s = "{\"name\": \"" + i.name + "\"," +
+                    "\"description\": \"" + i.description + "\"," +
+                    "\"discovered\": " + boolToString(i.discovered) + "}";
+        jItems.push_back(json::parse(s));
+    }
+    saveData["items"] = jItems;
+
     // save murderer
     saveData["murderer"] = murderer;
 
@@ -142,6 +164,7 @@ bool Game::playCutscene(string fileName) {
     string newTownsfolkLine = "New Townsfolk:";
     string newLocationsLine = "New Locations:";
     string newlyDeceasedLine = "Newly Deceased:";
+    string newItemsLine = "New Items:";
 
     string flag = "";
     int flagInt = 0;
@@ -149,6 +172,7 @@ bool Game::playCutscene(string fileName) {
     vector<string> newTownsfolk;    // list of new townsfolk for printing
     vector<string> newLocations;    // list of new locations for printing
     vector<string> newlyDeceased;   // list of newly deceased for printing
+    vector<string> newItems;        // list of new items for printing
 
     string line;
     fstream cutsceneFile("game_files/" + fileName + ".txt");
@@ -165,6 +189,9 @@ bool Game::playCutscene(string fileName) {
         } else if (line == newlyDeceasedLine) {
             flag = newlyDeceasedLine;
             flagInt = 3;
+        } else if (line == newItemsLine) {
+            flag = newItemsLine;
+            flagInt = 4;
         }
 
         if (flag == "") {                               // it's a regular line before the info section, just print it
@@ -193,11 +220,19 @@ bool Game::playCutscene(string fileName) {
 
             case 3: // newly deceased
             {
-                murder(line);                           // set alive = false
+                murder(line);                           // set alive = false (do not check if already dead)
                 newlyDeceased.push_back(line);          // add to print vector 
                 break;
             }
+
+            case 4: // new items
+            {
+                discoverItem(line);                     // set discovered = true (do not check if already discovered)
+                newItems.push_back(line);               // add to print vector 
+                break;
+            }
         }
+        
     }
     cutsceneFile.close();
 
@@ -225,6 +260,14 @@ bool Game::playCutscene(string fileName) {
         }
     }
 
+    // if there are new items, print them (assume no need to check for repeats)
+    if (!newLocations.empty()) {
+        cout << endl << newItemsLine << endl;
+        for (auto i: newItems) {
+            cout << i << endl;
+        }
+    }
+
     return true;
 }
 
@@ -232,8 +275,20 @@ void Game::murder(string name) {
     for (int i=0; i<townsfolk.size(); i++) {
         if (townsfolk[i].name == name) {
             townsfolk[i].alive = false;
+            return;
         }
     }
+    cout << "\nERROR! " + name + " does not match any name in townsfolk list.\n";
+}
+
+void Game::discoverItem(string name) {
+    for (int i=0; i<items.size(); i++) {
+        if (items[i].name == name) {
+            items[i].discovered = true;
+            return;
+        }
+    }
+    cout << "\nERROR! " + name + " does not match any item in items list.\n";
 }
 
 bool Game::discoverIfNew(string str, vector<Subject> vect, bool people) {
@@ -308,15 +363,16 @@ int Game::chooseAction() {
     cout << "3 - Run a background check\n";
     cout << "4 - Search a location\n";
     cout << "5 - Solve the case!\n";
+    cout << "6 - View inventory (viewing items in inventory costs 0 hours)\n";
     cout << "0 - Quit\n";
 
     string choice;
     getline(cin, choice);
-    while (isValidChoice(choice, 0, 5) == -1) {
-        cout << "Invalid entry. Please enter a number between 0 and 5.\n";
+    while (isValidChoice(choice, 0, 6) == -1) {
+        cout << "Invalid entry. Please enter a number between 0 and 6.\n";
         getline(cin, choice);
     }
-    return isValidChoice(choice, 0, 5);
+    return isValidChoice(choice, 0, 6);
 }
 
 string Game::chooseSubject(vector<Subject> subjects) {

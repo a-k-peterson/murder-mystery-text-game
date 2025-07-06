@@ -13,6 +13,8 @@ class Subject {
     int lastInteraction;
 
     Subject ();
+    Subject (string nameIn, string descriptionIn);
+    Subject (string nameIn, string descriptionIn, bool discoveredIn);
 };
 
 class NPC : public Subject {

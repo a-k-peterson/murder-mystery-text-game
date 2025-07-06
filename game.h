@@ -19,6 +19,7 @@ class Game {
     int hour;         // current hour
     vector<NPC> townsfolk;       // all townsfolk in the game
     vector<Location> locations;  // all locations in the game
+    vector<Subject> items;       // all items in the game
     string accused;   // who the player accuses of murder
     string murderer;  // who the actual murderer is
 
@@ -31,6 +32,8 @@ class Game {
     bool playCutscene(string fileName);
 
     void murder(string name);
+
+    void discoverItem(string name);
 
     bool discoverIfNew(string str, vector<Subject> vect, bool people);
     bool discoverIfNew(string str, vector<NPC> vect);
