@@ -6,59 +6,36 @@
 #include <string>
 using namespace std;
 
-#include "nlohmann/json.hpp"
-using json = nlohmann::json;
+inline const char * const boolToString(bool b) {
+  return b ? "true" : "false";
+}
 
 Game::Game () {
     //const int days = 3;   // total number of days in the game
     //const int hours = 8;  // number of hours per day
-    this->day = 1;      // current day
-    this->hour = 1;     // current hour
+    this->day;      // current day
+    this->hour;     // current hour
     this->townsfolk;    // all townsfolk in the game
     this->locations;    // all locations in the game
     this->accused = ""; // who the player accuses of murder
     this->murderer;     // murderer name
 
     getGameData();
-    getSaveData();
 }
 
 void Game::getGameData() {
-    ifstream file("game_files/game_data.json");
-    json jsonData = json::parse(file);
-    file.close();
-
-    // get townsfolk from json file
-    for (auto person : jsonData["townsfolk"]) {
-        NPC npc(person["name"], person["description"]);
-        townsfolk.push_back(npc);
-    }
-
-    // get locations from json file
-    for (auto place : jsonData["locations"]) {
-        Location location(place["name"], place["description"]);
-        locations.push_back(location);
-    }
-
-    // get murderer from json file
-    murderer = jsonData["murderer"];
-
-}
-
-void Game::getSaveData() {
-    ifstream file("game_files/save_data/save_A.json");
-    json jsonData = json::parse(file);
-    file.close();
-
-    if (jsonData["day"] == 0) {
-        // There is no saved game to load
+    ifstream saveFile(saveGameFileName);
+    if (!saveFile.good()) {
+        // There is no saved game, load new game state
+        loadGameState(newGameFileName);
         return;
     }
+    saveFile.close();
 
-    cout << "\nLoad saved game or start a new game? (Starting a new game will overwrite save file!)\n";
+    // There is a save file - ask if they want to load it
+    cout << "\nLoad saved game or start a new game? (Starting a new game will overwrite the saved game!)\n";
     cout << "1 - Load saved game\n";
     cout << "2 - Start new game\n";
-
     string choice;
     getline(cin, choice);
     while (isValidChoice(choice, 1, 2) == -1) {
@@ -68,62 +45,85 @@ void Game::getSaveData() {
     switch (isValidChoice(choice, 1, 2)) {
         case 1: // Load saved game
         {
-            // what day is it?
-            day = jsonData["day"];
-
-            // what hour is it?
-            hour = jsonData["hour"];
-
-            // which townsfolk have been discovered?
-            for (auto person : jsonData["discovered townsfolk"]) {
-                discoverIfNew(person, townsfolk);
-            }
-
-            // which locations have been discovered?
-            for (auto place : jsonData["discovered locations"]) {
-                discoverIfNew(place, locations);
-            }
+            loadGameState(saveGameFileName);
+            break;
         }
 
-        case 2: // Start new game - override save file
+        case 2: // Start new game - will overwrite old save file upon saving
         {
-            saveGame();
+            loadGameState(newGameFileName);
+            break;
         }
     }
 
 }
 
+void Game::loadGameState(string fileName) {
+    ifstream gameDataFile(fileName);
+    json gameData = json::parse(gameDataFile);
+    gameDataFile.close();
+
+    // get day
+    day = gameData["day"];
+
+    // get hour
+    hour = gameData["hour"];
+
+    // get townsfolk from json file
+    for (auto person : gameData["townsfolk"]) {
+        NPC npc(person["name"], person["description"], person["discovered"], person["alive"]);
+        townsfolk.push_back(npc);
+    }
+
+    // get locations from json file
+    for (auto place : gameData["locations"]) {
+        Location location(place["name"], place["description"], place["discovered"], place["warrant"]);
+        locations.push_back(location);
+    }
+
+    // get murderer from json file
+    murderer = gameData["murderer"];
+
+}
+
 void Game::saveGame() {
     cout << "Saving...\n";
-    json j;
+    json saveData;
 
-    // what day is it?
-    j["day"] = day;
+    // save day
+    saveData["day"] = day;
 
-    // what hour is it?
-    j["hour"] = hour;
+    // save hour
+    saveData["hour"] = hour;
 
-    // which townsfolk have been discovered?
-    vector<string> discoveredTownsfolk;
+    // save townsfolk vector
+    json jTownsfolk;
     for (auto i : townsfolk) {
-        if (i.discovered) {
-            discoveredTownsfolk.push_back(i.name);
-        }
+        string s = "{\"name\": \"" + i.name + "\"," +
+                    "\"description\": \"" + i.description + "\"," +
+                    "\"discovered\": " + boolToString(i.discovered) + "," +
+                    "\"alive\": " + boolToString(i.alive) + "}";
+        jTownsfolk.push_back(json::parse(s));
     }
-    j["discovered townsfolk"] = discoveredTownsfolk;
+    saveData["townsfolk"] = jTownsfolk;
 
-    // which locations have been discovered?
-    vector<string> discoveredLocations;
+    // save locations vector
+    json jLocations;
     for (auto i : locations) {
-        if (i.discovered) {
-            discoveredLocations.push_back(i.name);
-        }
+        string s = "{\"name\": \"" + i.name + "\"," +
+                    "\"description\": \"" + i.description + "\"," +
+                    "\"discovered\": " + boolToString(i.discovered) + "," +
+                    "\"warrant\": " + boolToString(i.warrant) + "}";
+        jLocations.push_back(json::parse(s));
     }
-    j["discovered locations"] = discoveredLocations;
+    saveData["locations"] = jLocations;
 
-    // write the json data to save file
-    ofstream saveFile("game_files/save_data/save_A.json");
-    saveFile << setw(4) << j << endl;
+    // save murderer
+    saveData["murderer"] = murderer;
+
+    // write the json data to save file - whatever was in the save file previously will be overwritten
+    ofstream saveFile(saveGameFileName);
+    saveFile << setw(4) << saveData << endl;
     saveFile.close();
 
 }

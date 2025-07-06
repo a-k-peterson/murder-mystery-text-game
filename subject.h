@@ -20,6 +20,7 @@ class NPC : public Subject {
     bool alive;
 
     NPC (string nameIn, string descriptionIn);
+    NPC (string nameIn, string descriptionIn, bool discoveredIn, bool aliveIn);
 };
 
 class Location : public Subject {
@@ -27,6 +28,7 @@ class Location : public Subject {
     bool warrant;
 
     Location (string nameIn, string descriptionIn);
+    Location (string nameIn, string descriptionIn, bool discoveredIn, bool warrantIn);
 };
 
 #endif
