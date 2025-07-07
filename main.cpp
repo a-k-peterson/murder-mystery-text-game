@@ -20,29 +20,16 @@ class Player {
 };
 
 int main() {
+  cout << "\nMURDER ON COMMAND\nBy Abby Peterson Ebeling\nInspired by Midsomer Murders, Vera, and Death in Paradise.\n\n";
+
   // init
   Game game;
   Player player;
 
-  cout << "\nMURDER ON COMMAND\nBy Abby Peterson Ebeling\nInspired by Midsomer Murders, Vera, and Death in Paradise\n\n";
-
-  // describe opener
-  game.playCutscene("opener");
-
-  // begin the investigation
-  cout << "You have recently been promoted to Detective Inspector (DI) for the City of <city> and its outlying villages.\n";
-  cout << "For your first case as a DI, you will be given " + to_string(game.days); 
-  cout << " days to solve the case on your own before a Detective Chief Inspector (DCI) is brought in to assist you. ";
-  cout << "Your goal is to prove your abilities by solving the case within " + to_string(game.days) + " days.\n";
-  cout << "Let's begin!\n\n";
-
-  // play "night before" cutscene (optional depending on story)
-  game.playCutscene("night_before");
-
   // loop for each day
   while (game.day <= game.days) {
     // cutscene for beginning of each day
-    cout << "\nMorning of day " + to_string(game.day) + ":\n";
+    cout << "Morning of day " + to_string(game.day) + ":";
     game.playCutscene("day_" + to_string(game.day) + "/morning");
 
     // loop for each hour in day
@@ -68,7 +55,8 @@ int main() {
             string scene = "day_" + to_string(game.day) + "/" + selected;
             if (!game.playCutscene(scene)) {
               // if no file found -> they had nothing new to say
-              cout << selected + " had nothing new to say...\n";
+              cout << endl << selected + " had nothing new to say...\n\n";
+              break;
             }
             game.hour++;
             break;
@@ -91,7 +79,8 @@ int main() {
           string scene = "day_" + to_string(game.day) + "/cctv_footage/" + selected + "_cctv";
           if (!game.playCutscene(scene)) {
             // if no file found -> there is no footage
-            cout << selected + " has no CC TV cameras installed...\n";
+            cout << endl << selected + " has no CC TV cameras installed...\n\n";
+            break;
           }
           game.hour++;
           break;
@@ -114,7 +103,8 @@ int main() {
             string scene = "background_checks/" + selected + "_background";
             if (!game.playCutscene(scene)) {
               // if no file found -> not in the system
-              cout << "There are no records of a \"" + selected + "\" in the system...\n";
+              cout << "\nThere are no records of a \"" + selected + "\" in the system...\n\n";
+              break;
             }
             game.hour++;
             break;
@@ -137,7 +127,8 @@ int main() {
             string scene = "day_" + to_string(game.day) + "/search_warrents/" + selected + "_search";
             if (!game.playCutscene(scene)) {
               // if no file found -> you don't have a search warrent
-              cout << "You don't have enough evidence to get a search warrent for " + selected + "...\n";
+              cout << "\nYou don't have enough evidence to get a search warrent for " + selected + "...\n\n";
+              break;
             }
             game.hour++;
             break;
@@ -177,7 +168,7 @@ int main() {
             string scene = "items/" + selected;
             if (!game.playCutscene(scene)) {
               // if no file found -> error
-              cout << "Error! No file " + selected + " found in items folder.\n";
+              cout << "\nError! No file " + selected + " found in items folder.\n\n";
             }
             //game.hour++;
             break;
@@ -207,7 +198,7 @@ int main() {
       break;
     }
     // out of time for today
-    cout << "Time to call it a day...\n";
+    cout << "Time to call it a day...\n\n";
     game.hour = 1;
     game.day++;
 

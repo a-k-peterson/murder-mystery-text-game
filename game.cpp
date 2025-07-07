@@ -25,16 +25,16 @@ Game::Game () {
 }
 
 void Game::getGameData() {
-    ifstream saveFile(saveGameFileName);
+    ifstream saveFile(savedGameFileName);
     if (!saveFile.good()) {
         // There is no saved game, load new game state
-        loadGameState(newGameFileName);
+        loadNewGame();
         return;
     }
     saveFile.close();
 
     // There is a save file - ask if they want to load it
-    cout << "\nLoad saved game or start a new game? (Starting a new game will overwrite the saved game!)\n";
+    cout << "Load saved game or start a new game? (Starting a new game will overwrite the saved game!)\n";
     cout << "1 - Load saved game\n";
     cout << "2 - Start new game\n";
     string choice;
@@ -46,21 +46,21 @@ void Game::getGameData() {
     switch (isValidChoice(choice, 1, 2)) {
         case 1: // Load saved game
         {
-            loadGameState(saveGameFileName);
+            loadSavedGame();
             break;
         }
 
         case 2: // Start new game - will overwrite old save file upon saving
         {
-            loadGameState(newGameFileName);
+            loadNewGame();
             break;
         }
     }
 
 }
 
-void Game::loadGameState(string fileName) {
-    ifstream gameDataFile(fileName);
+void Game::loadNewGame() {
+    ifstream gameDataFile(newGameFileName);
     json gameData = json::parse(gameDataFile);
     gameDataFile.close();
 
@@ -72,35 +72,67 @@ void Game::loadGameState(string fileName) {
 
     // get townsfolk from json file
     for (auto person : gameData["townsfolk"]) {
-        if (fileName == newGameFileName) {
-            NPC npc(person["name"], person["description"]);
-            townsfolk.push_back(npc);
-        } else {
-            NPC npc(person["name"], person["description"], person["discovered"], person["alive"]);
-            townsfolk.push_back(npc);
-        }
+        NPC npc(person["name"], person["description"]);
+        townsfolk.push_back(npc);
     }
 
     // get locations from json file
     for (auto place : gameData["locations"]) {
-        if (fileName == newGameFileName) {
-            Location location(place["name"], place["description"]);
-            locations.push_back(location);
-        } else {
-            Location location(place["name"], place["description"], place["discovered"], place["warrant"]);
-            locations.push_back(location);
-        }
+        Location location(place["name"], place["description"]);
+        locations.push_back(location);
     }
 
     // get items from json file
     for (auto thing : gameData["items"]) {
-        if (fileName == newGameFileName) {
-            Subject item(thing["name"], thing["description"]);
-            items.push_back(item);
-        } else {
-            Subject item(thing["name"], thing["description"], thing["discovered"]);
-            items.push_back(item);
-        }
+        Subject item(thing["name"], thing["description"]);
+        items.push_back(item);
+    }
+
+    // get murderer from json file
+    murderer = gameData["murderer"];
+
+    // play the opening scene
+    playCutscene("opener");
+
+    // print game instructions
+    cout << "You have recently been promoted to Detective Inspector (DI) for the City of <city> and its outlying villages.\n";
+    cout << "For your first case as a DI, you will be given " + to_string(days); 
+    cout << " days to solve the case on your own before a Detective Chief Inspector (DCI) is brought in to assist you. ";
+    cout << "Your goal is to prove your abilities by solving the case within " + to_string(days) + " days.\n";
+    cout << "Let's begin!\n";
+
+    // play "night before" cutscene (optional depending on story)
+    playCutscene("night_before");
+
+}
+
+void Game::loadSavedGame() {
+    ifstream gameDataFile(savedGameFileName);
+    json gameData = json::parse(gameDataFile);
+    gameDataFile.close();
+
+    // get day
+    day = gameData["day"];
+
+    // get hour
+    hour = gameData["hour"];
+
+    // get townsfolk from json file
+    for (auto person : gameData["townsfolk"]) {
+        NPC npc(person["name"], person["description"], person["discovered"], person["alive"]);
+        townsfolk.push_back(npc);
+    }
+
+    // get locations from json file
+    for (auto place : gameData["locations"]) {
+        Location location(place["name"], place["description"], place["discovered"], place["warrant"]);
+        locations.push_back(location);
+    }
+
+    // get items from json file
+    for (auto thing : gameData["items"]) {
+        Subject item(thing["name"], thing["description"], thing["discovered"]);
+        items.push_back(item);
     }
 
     // get murderer from json file
@@ -154,7 +186,7 @@ void Game::saveGame() {
     saveData["murderer"] = murderer;
 
     // write the json data to save file - whatever was in the save file previously will be overwritten
-    ofstream saveFile(saveGameFileName);
+    ofstream saveFile(savedGameFileName);
     saveFile << setw(4) << saveData << endl;
     saveFile.close();
 
@@ -179,6 +211,7 @@ bool Game::playCutscene(string fileName) {
     if (!cutsceneFile.good()) {
         return false;
     }
+    cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
     while (getline (cutsceneFile, line)) {
         if (line == newTownsfolkLine) {
             flag = newTownsfolkLine;
@@ -236,9 +269,11 @@ bool Game::playCutscene(string fileName) {
     }
     cutsceneFile.close();
 
+    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+
     // if there are new townsfolk, print them
     if (!newTownsfolk.empty()) {
-        cout << endl << newTownsfolkLine << endl;
+        cout << newTownsfolkLine << endl;
         for (auto i: newTownsfolk) {
             cout << i << endl;
         }
@@ -261,13 +296,14 @@ bool Game::playCutscene(string fileName) {
     }
 
     // if there are new items, print them (assume no need to check for repeats)
-    if (!newLocations.empty()) {
+    if (!newItems.empty()) {
         cout << endl << newItemsLine << endl;
         for (auto i: newItems) {
             cout << i << endl;
         }
     }
 
+    cout << endl;
     return true;
 }
 
@@ -355,7 +391,7 @@ int Game::isValidChoice(string input, int min, int max) {
 }
 
 int Game::chooseAction() {
-    cout << "\n\nDay: " + to_string(day) + "/" + to_string(days);
+    cout << "Day: " + to_string(day) + "/" + to_string(days);
     cout << "\tHour: " + to_string(hour) + "/" + to_string(hours) + "\n";
     cout << "What would you like to do?\n";
     cout << "1 - Interview someone\n";
